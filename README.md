@@ -1,7 +1,7 @@
 StripeTaker-1.02
 ================
 
-This is the open-sourced version of StripeTaker v1.01.
+This is the open-sourced version of StripeTaker v1.01, a previously-closed source project.
 
 As this project was abandoned in favor of large-scale, MVC-styled projects, this project was edited
 so that it could be used by others looking for some kind of solution for Stripe.com integration.
