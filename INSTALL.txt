@@ -1,0 +1,22 @@
+[ INSTALLATION ]
+
+Simply unzip the file to a directory for your web site.
+
+If you unzip the file to: /home/username/yoursite.com/store/
+
+Then the address for the application would be: https://yoursite.com/store/
+
+Just open your browser and point it to https://yoursite.com/store/setup.php where
+"yoursite.com" is your domain name and "store" is the directory you installed
+the application to.
+
+
+[ NEED HELP? ]
+
+No problem!  Just point your browser to the following web site:
+
+http://support.nightkingdoms.com/customer/portal/topics/318505-nk-stripetaker/articles
+
+Or email us at helpdesk@nightkingdoms.com for some support issues.
+
+Thanks for installing StripeTaker!
