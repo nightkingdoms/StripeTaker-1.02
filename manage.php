@@ -18,22 +18,6 @@
 
    $header_pagename = "Manage Your Store";
 
-
-   if (substr($_REQUEST['op'], 0, 7) != "License") {
-
-      License_HandleResults(License_Check($StripeTaker_SaveFile_Data['serial'], License_ReadCore1()));
-
-   } elseif ($_REQUEST['op'] == "License_Clear") {
-
-      unlink(STAKER_CORE);
-      unlink(STAKER_CORE2);
-      License_HandleResults(License_Check($StripeTaker_SaveFile_Data['serial'], License_ReadCore1()));
-      header("Location:manage.php?op=License&info=<b>License Updated Successfully</b>");
-      die();
-
-   }
-
-
    switch($_REQUEST['op']) {
 
       case "Install":
@@ -41,14 +25,6 @@
          include("install.php");
          Install_Run();
       }
-      break;
-
-      case "License":
-      License_Main();
-      break;
-
-      case "License_Update":
-      License_Update();
       break;
 
       case "Orders":
@@ -397,10 +373,6 @@ if ($StripeTaker_SaveFile_Data['demo_mode'] == "Yes") { $err_count++; $errors['a
    if (mb_strlen($forminfo['key_live_s']) < 10 || substr($forminfo['key_live_s'], 0, 3) != "sk_") { $err_count++; $errors['key_live_s'] = ""; $errors['alert-msg'] .= "<li>You must enter a valid Live Secret Key.</li>"; }
    if (mb_strlen($forminfo['key_live_p']) < 10 || substr($forminfo['key_live_p'], 0, 3) != "pk_") { $err_count++; $errors['key_live_p'] = ""; $errors['alert-msg'] .= "<li>You must enter a valid Live Publishable Key.</li>"; }
 }
-
-   unlink(STAKER_CORE);
-   unlink(STAKER_CORE2);
-   License_HandleResults(License_Check($StripeTaker_SaveFile_Data['serial'], License_ReadCore1()));
 
    // finish error checking;
    if ($err_count > 0) {
@@ -757,7 +729,7 @@ function Settings_Form($forminfo, $errors=0) {
 
    <p><label for="serial"><b>Put your serial number here:</b></label>
    <?php if ($StripeTaker_SaveFile_Data['demo_mode'] != "Yes") { ?>
-   <input type="text" name="serial" id="serial" class="input-xlarge<?php if (isset($errors['serial'])) { echo " error"; } ?>" placeholder="StripeTaker-XXXXXXXXXXXXXXXXXXXX" value="<?php if (mb_strlen($forminfo['serial']) > 0) { echo $forminfo['serial']; } ?>" /></p>
+   <input type="text" name="serial" id="serial" class="input-xlarge<?php if (isset($errors['serial'])) { echo " error"; } ?>" placeholder="StripeTaker-XXXXXXXXXXXXXXXXXXXX" value="<?php if (mb_strlen($forminfo['serial']) > 0) { echo $forminfo['serial']; } else { echo "StripeTaker-XXXXXXXXXXXXXXXXXXXX"; } ?>" /></p>
    <?php } else { ?>
    <p id="serial"><i>Can't change it while in demo mode!</i></p>
    <?php } ?>
@@ -765,25 +737,11 @@ function Settings_Form($forminfo, $errors=0) {
 
    <p><label for="currency"><b>Choose your currency:</b></label>
    <select name="currency" id="currency" <?php if (isset($errors['currency'])) { echo "class=\"error\""; } ?>>
-   <?php
-
-   if (isset($forminfo['currency'])) {
-
-      if ($forminfo['currency'] == "USD") {
-
-         ?><option value="USD" SELECTED>* United States Dollars (USD)</option><?php
-
-      } else {
-
-         ?><option value="CAN" SELECTED>* Canadian Dollars (CAN)</option><?php
-
-      }
-
-   }
-
-   ?>
-   <option value="USD">United States Dollars (USD)</option>
-   <option value="CAN">Canadian Dollars (CAN)</option>
+   <option value="USD"<?php if ($forminfo['currency'] == "USD") { echo " SELECTED"; } ?>><?php if ($forminfo['currency'] == "USD") { echo "* "; } ?>United States Dollars (USD)</option>
+   <option value="CAN"<?php if ($forminfo['currency'] == "CAN") { echo " SELECTED"; } ?>><?php if ($forminfo['currency'] == "CAN") { echo " SELECTED"; } ?>Canadian Dollars (CAN)</option>
+   <option value="GBP"<?php if ($forminfo['currency'] == "GBP") { echo " SELECTED"; } ?>><?php if ($forminfo['currency'] == "GBP") { echo " SELECTED"; } ?>British Pound Sterline (GBP)</option>
+   <option value="EUR"<?php if ($forminfo['currency'] == "EUR") { echo " SELECTED"; } ?>><?php if ($forminfo['currency'] == "EUR") { echo " SELECTED"; } ?>Euros (EUR)</option>
+   <option value="AUD"<?php if ($forminfo['currency'] == "AUD") { echo " SELECTED"; } ?>><?php if ($forminfo['currency'] == "AUD") { echo " SELECTED"; } ?>Australian Dollars (AUD)</option>
    </select></p>
 
    <p><label for="mode"><b>Is this store LIVE or in TEST mode?</b></label>
@@ -1806,329 +1764,6 @@ function Products_Main() {
 }
 
 
-function License_Main() {
-   global $StripeTaker_SaveFile_Data, $browser_type;
-
-   $license_data = License_ReadCore2();
-
-   if (!isset($license_data['status'])) {
-
-      License_Refresh();
-
-   } else {
-
-      include("headers.inc.php");
-      Manage_Menu();
-
-      ?><?php if (isset($_REQUEST['info'])) { ?>
-      <div class="alert alert-info"><?php echo $_REQUEST['info']; ?></div>
-      <?php } ?>
-
-
-      <h3>Your License Data</h3>
-
-      <table border="0" class="table table-bordered table-striped" style="width: <?php if ($browser_type == "mobile") { echo "100%"; } else { echo "400"; } ?>;">
-         <tbody>
-            <tr class="<?php if ($license_data['status'] == "Active") { echo "success"; } else { echo "error"; } ?>">
-               <td width="50%">
-                  <b>License Status:</b>
-               </td>
-               <td width="50%">
-                  <?php echo $license_data['status']; ?>
-               </td>
-            </tr>
-            <tr>
-               <td>
-                  <b>Owner:</b>
-               </td>
-               <td>
-                  <?php echo $license_data['registeredname']; ?> <?php if (mb_strlen($license_data['companyname']) > 0) { echo " (" . $license_data['companyname'] . ")"; } ?>
-               </td>
-            </tr>
-            <tr>
-               <td>
-                  <b>Email:</b>
-               </td>
-               <td>
-                  <?php echo $license_data['email']; ?>
-               </td>
-            </tr>
-            <tr>
-               <td>
-                  <b>License Type:</b>
-               </td>
-               <td>
-                  <?php echo $license_data['productname']; ?>
-               </td>
-            </tr>
-            <tr>
-               <td>
-                  <b>License Key:</b>
-               </td>
-               <td>
-                  <?php echo $StripeTaker_SaveFile_Data['serial']; ?>
-               </td>
-            </tr>
-            <tr>
-               <td>
-                  <b>Last Validation:</b>
-               </td>
-               <td>
-                  <?php echo substr($license_data['checkdate'], 4, 2) . "/" . substr($license_data['checkdate'], 6, 2) . "/" . substr($license_data['checkdate'], 0, 4); ?>
-               </td>
-            </tr>
-            <tr>
-               <td>
-                  <b>Your Version:</b>
-               </td>
-               <td>
-                  <?php echo $StripeTaker_SaveFile_Data['version']; ?>
-               </td>
-            </tr>
-            <tr>
-               <td>
-                  <b>Current Version:</b>
-               </td>
-               <td>
-                  <?php echo $license_data['version']; ?> 
-                  <?php
-
-                     $this_version = $StripeTaker_SaveFile_Data['version'];
-                     $that_version = $license_data['version'];
-                     settype($this_version, "float");
-                     settype($that_version, "float");
-
-                     if ($license_data['addon_Updates'] == "Active" && $this_version < $that_version) {
-
-                        ?> <button class="btn btn-success btn-mini" onClick="javascript:location.href='update.php';">An Update Is Available!</button><?php
-
-                     }
-
-                  ?>
-               </td>
-            </tr>
-         </tbody>
-      </table>
-
-      <h4 style="color: #0066ff;">Add-On Status</h4>
-      <table border="0" class="table table-bordered table-striped" style="width: <?php if ($browser_type == "mobile") { echo "100%"; } else { echo "400"; } ?>;">
-         <tbody>
-            <tr class="<?php if ($license_data['addon_BrandingRemoval'] == "Active") { echo "info"; } else { echo "warning"; } ?>">
-               <td width="50%">
-                  <b>Branding Removal:</b>
-               </td>
-               <td width="50%">
-                  <?php if (!isset($license_data['addon_BrandingRemoval'])) { echo "Inactive"; } else { echo $license_data['addon_BrandingRemoval']; } ?>
-               </td>
-            </tr>
-            <tr class="<?php if ($license_data['addon_PremiumSupport'] == "Active") { echo "info"; } else { echo "warning"; } ?>">
-               <td width="50%">
-                  <b>Installation:</b>
-               </td>
-               <td width="50%">
-                  <?php if (!isset($license_data['addon_PremiumSupport'])) { echo "Inactive"; } else { echo $license_data['addon_PremiumSupport']; } ?>
-               </td>
-            </tr>
-            <tr class="<?php if ($license_data['addon_Updates'] == "Active") { echo "info"; } else { echo "warning"; } ?>">
-               <td width="50%">
-                  <b>Updates:</b>
-               </td>
-               <td width="50%">
-                  <?php if (!isset($license_data['addon_Updates'])) { echo "Inactive"; } else { echo $license_data['addon_Updates']; } ?>
-               </td>
-            </tr>
-            <tr class="<?php if ($license_data['addon_SyncPCRT'] == "Active") { echo "info"; } else { echo "warning"; } ?>">
-               <td width="50%">
-                  <b>Synchronization: PC Repair Tracker</b>
-               </td>
-               <td width="50%">
-                  <?php if (!isset($license_data['addon_SyncPCRT'])) { echo "Inactive"; } else { echo $license_data['addon_SyncPCRT']; } ?>
-               </td>
-            </tr>
-         </tbody>
-      </table>
-
-      <p><center><button class="btn btn-info btn-large" onClick="javascript:location.href='manage.php?op=License_Clear';">Refresh Your License Data</button></center></p>
-
-      <?php
-
-      include("footers.inc.php");
-
-   }
-
-}
-
-
-function License_Check($licensekey,$localkey="") {
-    $whmcsurl = "https://secure.x-mirror.com/erp/";
-    $licensing_secret_key = "VGhpcyBpcyBhIHRlc3Qgb2YgdGhlIGVtZXJnZW5jeSBicm9hZGNhc3Qgc3lzdGVtLiBJZiB0aGlzIHdhcyBhIHJlYWwgdGVzdCwgdGhpcyBtZXNzYWdlIHdvdWxkIGJlIGZvbGxvd2VkIGJ5IGluc3RydWN0aW9ucy4="; # Unique value, should match what is set in the product configuration for MD5 Hash Verification
-    $check_token = time().md5(mt_rand(1000000000,9999999999).$licensekey);
-    $checkdate = date("Ymd"); # Current date
-    $usersip = isset($_SERVER['SERVER_ADDR']) ? $_SERVER['SERVER_ADDR'] : $_SERVER['LOCAL_ADDR'];
-    $localkeydays = 15; # How long the local key is valid for in between remote checks
-    $allowcheckfaildays = 5; # How many days to allow after local key expiry before blocking access if connection cannot be made
-    $localkeyvalid = false;
-    if ($localkey) {
-        $localkey = str_replace("\n",'',$localkey); # Remove the line breaks
-		$localdata = substr($localkey,0,strlen($localkey)-32); # Extract License Data
-		$md5hash = substr($localkey,strlen($localkey)-32); # Extract MD5 Hash
-        if ($md5hash==md5($localdata.$licensing_secret_key)) {
-            $localdata = strrev($localdata); # Reverse the string
-    		$md5hash = substr($localdata,0,32); # Extract MD5 Hash
-    		$localdata = substr($localdata,32); # Extract License Data
-    		$localdata = base64_decode($localdata);
-    		$localkeyresults = unserialize($localdata);
-            $originalcheckdate = $localkeyresults["checkdate"];
-            if ($md5hash==md5($originalcheckdate.$licensing_secret_key)) {
-                $localexpiry = date("Ymd",mktime(0,0,0,date("m"),date("d")-$localkeydays,date("Y")));
-                if ($originalcheckdate>$localexpiry) {
-                    $localkeyvalid = true;
-                    $results = $localkeyresults;
-                    $validdomains = explode(",",$results["validdomain"]);
-                    if (!in_array($_SERVER['SERVER_NAME'], $validdomains)) {
-                        $localkeyvalid = false;
-                        $localkeyresults["status"] = "Invalid";
-                        $results = array();
-                    }
-                    $validips = explode(",",$results["validip"]);
-                    if (!in_array($usersip, $validips)) {
-                        $localkeyvalid = false;
-                        $localkeyresults["status"] = "Invalid";
-                        $results = array();
-                    }
-                    if ($results["validdirectory"]!=dirname(__FILE__)) {
-                        $localkeyvalid = false;
-                        $localkeyresults["status"] = "Invalid";
-                        $results = array();
-                    }
-                }
-            }
-        }
-    }
-    if (!$localkeyvalid) {
-        $postfields["licensekey"] = $licensekey;
-        $postfields["domain"] = $_SERVER['SERVER_NAME'];
-        $postfields["ip"] = $usersip;
-        $postfields["dir"] = dirname(__FILE__);
-        if ($check_token) $postfields["check_token"] = $check_token;
-        if (function_exists("curl_exec")) {
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $whmcsurl."modules/servers/licensing/verify.php");
-            curl_setopt($ch, CURLOPT_POST, 1);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $postfields);
-            curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-            $data = curl_exec($ch);
-            curl_close($ch);
-        } else {
-            $fp = fsockopen($whmcsurl, 80, $errno, $errstr, 5);
-	        if ($fp) {
-        		$querystring = "";
-                foreach ($postfields AS $k=>$v) {
-                    $querystring .= "$k=".urlencode($v)."&";
-                }
-                $header="POST ".$whmcsurl."modules/servers/licensing/verify.php HTTP/1.0\r\n";
-        		$header.="Host: ".$whmcsurl."\r\n";
-        		$header.="Content-type: application/x-www-form-urlencoded\r\n";
-        		$header.="Content-length: ".@strlen($querystring)."\r\n";
-        		$header.="Connection: close\r\n\r\n";
-        		$header.=$querystring;
-        		$data="";
-        		@stream_set_timeout($fp, 20);
-        		@fputs($fp, $header);
-        		$status = @socket_get_status($fp);
-        		while (!@feof($fp)&&$status) {
-        		    $data .= @fgets($fp, 1024);
-        			$status = @socket_get_status($fp);
-        		}
-        		@fclose ($fp);
-            }
-        }
-        if (!$data) {
-            $localexpiry = date("Ymd",mktime(0,0,0,date("m"),date("d")-($localkeydays+$allowcheckfaildays),date("Y")));
-            if ($originalcheckdate>$localexpiry) {
-                $results = $localkeyresults;
-            } else {
-                $results["status"] = "Invalid";
-                $results["description"] = "Remote Check Failed";
-                return $results;
-            }
-        } else {
-            preg_match_all('/<(.*?)>([^<]+)<\/\\1>/i', $data, $matches);
-            $results = array();
-            foreach ($matches[1] AS $k=>$v) {
-                $results[$v] = $matches[2][$k];
-            }
-        }
-        if ($results["md5hash"]) {
-            if ($results["md5hash"]!=md5($licensing_secret_key.$check_token)) {
-                $results["status"] = "Invalid";
-                $results["description"] = "MD5 Checksum Verification Failed";
-                return $results;
-            }
-        }
-        if ($results["status"]=="Active") {
-            $results["checkdate"] = $checkdate;
-            $data_encoded = serialize($results);
-            $data_encoded = base64_encode($data_encoded);
-            $data_encoded = md5($checkdate.$licensing_secret_key).$data_encoded;
-            $data_encoded = strrev($data_encoded);
-            $data_encoded = $data_encoded.md5($data_encoded.$licensing_secret_key);
-            $data_encoded = wordwrap($data_encoded,80,"\n",true);
-            $results["localkey"] = $data_encoded;
-        }
-        $results["remotecheck"] = true;
-    }
-    unset($postfields,$data,$matches,$whmcsurl,$licensing_secret_key,$checkdate,$usersip,$localkeydays,$allowcheckfaildays,$md5hash);
-    return $results;
-}
-
-
-function License_HandleResults($x0b) {
-global $x0c; $x0d[] = "135"; $x0d[] = "137"; if (!in_array($x0b['productid'], $x0d)) { $x0b['status'] = "Invalid"; } if ($x0b['status'] == "Active") { if ($x0b['localkey']) { $x0e = fopen(STAKER_CORE, "w"); fwrite($x0e, $x0b['localkey']); fclose($x0e); $x0f = $x0b; unset($x0f['localkey']); if (isset($x0b['addons'])) { $x10 = explode("|", $x0b['addons']); foreach($x10 as $x11) { $x12[] = explode(";", $x11); } $x13 = 0; foreach($x12 as $x14) { list($x15, $x16) = explode("=", $x14[0]); $x17 = "addon_" . $x16; $x17 = preg_replace("/ /","", $x17); list($x15, $x16) = explode("=", $x14[2]); $x0f[$x17] = $x16; $x13++; } unset($x0f['addons']); } if (isset($x0b['customfields'])) { $x18 = explode("|", $x0b['customfields']); foreach($x18 as $x11) { $x19[] = explode(";", $x11); } $x1a = 0; foreach($x19 as $x14) { list($x1b, $x1c) = explode("=", $x14[0]); $x0f[$x1b] = $x1c; $x1a++; } unset($x0f['customfields']); } unset($x0f['version']); $x0f['version'] = $x0b['curr_version']; unset($x0f['curr_version']); $x0f['update_url'] = $x0b['update_url']; unset($x0f['validdomain']); unset($x0f['validip']); unset($x0f['validdirectory']); unset($x0f['md5hash']); unset($x0f['remotecheck']); DataOps_SaveFile(STAKER_CORE2, $x0f); } } elseif ($x0b['status'] == "Invalid") { include("headers.inc.php"); ?><div width="80%" align="center" class="alert alert-error"> <h3><i class="icon-exclamation-sign icon-large"></i> Your License Is No Longer Valid</h3> <p>If you believe this to be in error, <a href="manage.php?op=License_Clear">please click here</a> <b>once</b> to refresh your license information.</p> <p>If you receive this message again after clicking the above link, please contact Support by <a href="https://secure.x-mirror.com/erp/submitticket.php?step=2&deptid=2" target="_blank">opening a support ticket here</a>.</p> <form method="POST" action="manage.php?op=License_Update" id="license_update_form"> <input type="hidden" name="checksum" id="checksum" value="<?php echo md5(date("Y\155d", time()) . $x0c['serial']); ?>"> <p><b>You can also try updating your License Key here:</b><br /> <div class="form-inline"><center> <input type="text" name="new_key" id="new_key" class="input-xxlarge" placeholder="StripeTaker-XXXXXXXXXXXXXXXXXXXX" value="<?php echo $x0c['serial']; ?>" /> <button class="btn" onClick="javascript:document.forms['license_update_form'].submit(); this.disabled=true;">Update</button> </div></div></p> </form> </div><?phpinclude("\x66\x6f\157\x74\x65\162\x73\056\151\x6ec\x2ep\150\160");die(); } elseif ($x0b['status'] == "\105\170\160\x69\x72\145\144") {include("\150e\x61\x64\145\x72s.\151\x6ec.\160\x68p");?><div width="80%" align="center" class="alert alert-error"> <h3><i class="icon-exclamation-sign icon-large"></i> You license has expired.</h3> <p>If you believe this to be in error, please contact Support by <a href="https://secure.x-mirror.com/erp/submitticket.php?step=2&deptid=2" target="_blank">opening a support ticket here</a>.</p> </div><?phpinclude("f\x6fo\164\x65r\163.\x69n\x63\056p\x68p");die(); } elseif ($x0b['status'] == "\123\x75sp\145nd\x65d") {include("\150ea\144e\162\163\x2ein\143\x2e\x70\x68p");?><div width="80%" align="center" class="alert alert-error"> <h3><i class="icon-exclamation-sign icon-large"></i> You license has expired.</h3> <p>If you believe this to be in error, please contact Support by <a href="https://secure.x-mirror.com/erp/submitticket.php?step=2&deptid=2" target="_blank">opening a support ticket here</a>.</p> </div><?phpinclude("fo\x6f\164e\x72s\x2e\x69\x6e\x63\056p\x68p");die(); } else { }}function License_ReadCore1() { if (file_exists($x1d)) { $x0e = fopen(STAKER_CORE, "rt");while(!feof($x0e)) { $x0b .= fgets($x0e, 8192);}fclose($x0e);return $x0b; } else {return ''; }
-}
-
-
-function License_ReadCore2() {
-
-   $data = DataOps_ReadFile(STAKER_CORE2);
-
-   return $data;
-
-}
-
-
-function License_Refresh() {
-
-   if (file_exists(STAKER_CORE)) { unlink(STAKER_CORE); } // delete local key store;
-   if (file_exists(STAKER_CORE2)) { unlink(STAKER_CORE2); } // delete readable key store;
-
-   License_HandleResults(License_Check($StripeTaker_SaveFile_Data['serial'], ''));
-
-   header("Location:manage.php?op=License");
-
-}
-
-
-function License_Update() {
-   global $StripeTaker_SaveFile_Data;
-
-   $core_data = DataOps_ReadFile(STAKER_DATA);
-   $md5_check = md5(date("Ymd", time()) . $StripeTaker_SaveFile_Data['serial']);
-   $md5_value = $_REQUEST['checksum'];
-
-   if ($md5_check == $md5_value) {
-
-      $core_data['serial'] = $_REQUEST['new_key'];
-      DataOps_SaveFile(STAKER_DATA, $core_data);
-
-   }
-
-   header("Location:manage.php?op=License_Clear");
-
-}
-
-
 function Manage_Menu() {
    global $StripeTaker_SaveFile_Data, $browser_type;
 
@@ -2162,7 +1797,6 @@ function Manage_Menu() {
      <li <?php if ($_REQUEST['op'] == "Customers") { echo "class=\"active\""; } ?>><a href="manage.php?op=Customers"><i class="icon-group icon-large"></i> Customers</a></li>
      <li <?php if ($_REQUEST['op'] == "Templates") { echo "class=\"active\""; } ?>><a href="manage.php?op=Templates"><i class="icon-envelope icon-large"></i> Email Templates</a></li>
      <li <?php if ($_REQUEST['op'] == "Settings") { echo "class=\"active\""; } ?>><a href="manage.php?op=Settings"><i class="icon-cogs icon-large"></i> Settings</a></li>
-     <li <?php if ($_REQUEST['op'] == "License") { echo "class=\"active\""; } ?>><a href="manage.php?op=License"><i class="icon-check icon-large"></i> License</a></li>
      <li><a href="http://support.nightkingdoms.com/customer/portal/topics/318505-nk-stripetaker/articles" target="_blank"><i class="icon-question-sign icon-large"></i> Support</a></li>
      <li><a href="logout.php"><i class="icon-signout icon-large"></i> LogOut</a></li>
    </ul>

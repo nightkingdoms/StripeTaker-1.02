@@ -28,7 +28,7 @@
    }
 
    include("core/forms.php");
-   include("core/edi.php");
+   if (basename($_SERVER['PHP_SELF']) != "setup.php") { include("core/edi.php"); }
    include("core/sessions.php");
    include("core/dataops.php");
    include("res/php-mobile-detect/Mobile_Detect.php");

@@ -47,11 +47,11 @@
       if (!Forms_CheckValidEmail($forminfo['notify_cust'])) { $err_count++; $errors['notify_cust'] = ""; $errors['alert-msg'] .= "<li>The email address to notify the customer is invalid. Please re-enter it.</li>"; }
       if (mb_strlen($forminfo['storename']) < 3) { $err_count++; $errors['storename'] = ""; $errors['alert-msg'] .= "<li>You must enter a valid store name.</li>"; }
       if (mb_strlen($forminfo['password']) < 8) { $err_count++; $errors['password'] = ""; $errors['alert-msg'] .= "<li>Your password must be at least 8 characters long.</li>"; }
-      if (mb_strlen($forminfo['serial']) < 25) { $err_count++; $errors['serial'] = ""; $errors['alert-msg'] .= "<li>You must enter a valid serial number.</li>"; }
+      //if (mb_strlen($forminfo['serial']) < 25) { $err_count++; $errors['serial'] = ""; $errors['alert-msg'] .= "<li>You must enter a valid serial number.</li>"; }
       if ($forminfo['currency'] != "USD" && $forminfo['currency'] != "CAN") { $err_count++; $errors['currency'] = ""; $error['alert-msg'] .= "<li>You must choose a valid currency.</li>"; }
       if ($forminfo['mode'] != "Test" && $forminfo['mode'] != "Live") { $err_count++; $errors['mode'] = ""; $error['alert-msg'] .= "<li>You must choose a valid mode.</li>"; }
-      if (!mb_strlen($forminfo['enc_key']) != 32) { $err_count++; $errors['enc_key'] = ""; $errors['alert-msg'] .= "<li>Your encryption key must be exactly 32 characters long.</li>"; }
-      if (!mb_strlen($forminfo['enc_iv']) != 16) { $err_count++; $errors['enc_iv'] = ""; $errors['alert-msg'] .= "<li>Your encryption vector must be exactly 16 characters long.</li>"; }
+      if (mb_strlen($forminfo['enc_key']) != 32) { $err_count++; $errors['enc_key'] = ""; $errors['alert-msg'] .= "<li>Your encryption key must be exactly 32 characters long.</li>"; }
+      if (mb_strlen($forminfo['enc_iv']) != 16) { $err_count++; $errors['enc_iv'] = ""; $errors['alert-msg'] .= "<li>Your encryption vector must be exactly 16 characters long.</li>"; }
       if (mb_strlen($forminfo['key_test_s']) < 10 || substr($forminfo['key_test_s'], 0, 3) != "sk_") { $err_count++; $errors['key_test_s'] = ""; $errors['alert-msg'] .= "<li>You must enter a valid Test Secret Key.</li>"; }
       if (mb_strlen($forminfo['key_test_p']) < 10 || substr($forminfo['key_test_p'], 0, 3) != "pk_") { $err_count++; $errors['key_test_p'] = ""; $errors['alert-msg'] .= "<li>You must enter a valid Test Publishable Key.</li>"; }
       if (mb_strlen($forminfo['key_live_s']) < 10 || substr($forminfo['key_live_s'], 0, 3) != "sk_") { $err_count++; $errors['key_live_s'] = ""; $errors['alert-msg'] .= "<li>You must enter a valid Live Secret Key.</li>"; }
@@ -68,6 +68,7 @@
 
          unset($errors);
          set_enc_info($forminfo['enc_key'], $forminfo['enc_iv']);
+         include("core/edi.php");
          $forminfo['installed'] = time();
          DataOps_SaveFile(STAKER_DATA, $forminfo);
          Obviator_NotifyAdmin($forminfo);
@@ -394,8 +395,8 @@
 <p><label for="password"><b>Choose a password to use to manage your store:</b></label>
 <input type="password" name="password" id="password" class="input-large<?php if (isset($errors['password'])) { echo " error"; } ?>" placeholder="MySecretPassword" value="<?php if (mb_strlen($forminfo['password']) > 0) { echo $forminfo['password']; } ?>" /></p>
 
-<p><label for="serial"><b>Put your serial number here:</b></label>
-<input type="text" name="serial" id="serial" class="input-xlarge<?php if (isset($errors['serial'])) { echo " error"; } ?>" placeholder="StripeTaker-XXXXXXXXXXXXXXXXXXXX" value="<?php if (mb_strlen($forminfo['serial']) > 0) { echo $forminfo['serial']; } ?>" /></p>
+<!--<p><label for="serial"><b>Put your serial number here:</b></label>
+<input type="text" name="serial" id="serial" class="input-xlarge<?php if (isset($errors['serial'])) { echo " error"; } ?>" placeholder="StripeTaker-XXXXXXXXXXXXXXXXXXXX" value="<?php if (mb_strlen($forminfo['serial']) > 0) { echo $forminfo['serial']; } else { echo "StripeTaker-XXXXXXXXXXXXXXXXXXXX"; } ?>" /></p>-->
 
 <p><label for="currency"><b>Choose your currency:</b></label>
 <select name="currency" id="currency" <?php if (isset($errors['currency'])) { echo "class=\"error\""; } ?>>
@@ -542,6 +543,8 @@ URL = " . $store_url;
 
 
    function set_enc_info($enc_key, $enc_iv) {
+
+      $file = "core/edi.php";
 
       if (file_exists("core/edi.php")) {
 

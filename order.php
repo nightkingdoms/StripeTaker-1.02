@@ -14,8 +14,6 @@
 
    require_once("core/init.php");
 
-   License_HandleResults(License_Check($StripeTaker_SaveFile_Data['serial'], License_ReadCore1()));
-
    switch($_REQUEST['op']) {
 
       case "View":
