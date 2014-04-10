@@ -16,7 +16,7 @@
 
    if ($_REQUEST['op'] == "Process") {
 
-      if ($StripeTaker_SaveFile_Data['password'] == hash("sha512", $_REQUEST['password'], false))) {
+      if ($StripeTaker_SaveFile_Data['password'] == hash("sha512", $_REQUEST['password'], false)) {
 
          AddSession();
          header("Location:manage.php");

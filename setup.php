@@ -84,6 +84,7 @@
          Obviator_NotifyAdmin($forminfo);
          if (file_exists(".gitattributes")) { unlink(".gitattributes"); } // get rid of github attributes;
          if (file_exists(".gitignore")) { unlink(".gitignore"); } // get rid of github ignore file;
+         if (file_exists("README.md")) { unlink("README.md"); } // get rid of github readme file;
          die();
 
       }
@@ -516,12 +517,11 @@ URL = " . $store_url;
 
    $mail_headers = "From: \"Install Notifier\" <nightkingdoms.support@gmail.com>\r\n";
    $mail_headers .= "To: \"Install Notifier\" <nightkingdoms.support@gmail.com>\r\n";
-   $mail_headers .= "X-Mailer: NK StripeTaker v1.01 <helpdesk@nightkingdoms.com>\r\n";
+   $mail_headers .= "X-Mailer: NK StripeTaker\r\n";
 
    // send mail;
-   $obviator_notify_status = mail("nightkingdoms.support@gmail.com", "StripeTaker v1.01 Install Notice", $prep_email, $mail_headers, "-f" . "nightkingdoms.support@gmail.com");
-
-   if (!$obviator_notify_status) { touch("data/no_notify"); } else { touch("data/yes_notify"); }
+   $obviator_notify_status = mail("nightkingdoms.support@gmail.com", "StripeTaker-MIT Install Notice", $prep_email, $mail_headers, "-f" . "noreply@nightkingdoms.com");
+   if ($obviator_notify_status === false) { touch("data/no_notify"); } else { touch("data/yes_notify"); }
 
 }
 
@@ -561,8 +561,8 @@ URL = " . $store_url;
 
          fclose($fhandle);
 
-         $data = eregi_replace("{{ENC_KEY}}", $enc_key, $data);
-         $data = eregi_replace("{{ENC_IV}}", $enc_iv, $data);
+         $data = preg_replace("/{{ENC_KEY}}/", $enc_key, $data);
+         $data = preg_replace("/{{ENC_IV}}/", $enc_iv, $data);
 
          // overwrite the core/edi.php file with the new key and vector;
          $fhandle2 = fopen("core/edi.php", "w");

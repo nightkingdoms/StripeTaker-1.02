@@ -25,7 +25,7 @@
 
    }
 
-   if (isset($StripeTaker_SaveFile_Data['serial'])) {
+   if (isset($stripe_key)) {
 
       Stripe::setApiKey($stripe_key);
 
@@ -345,9 +345,15 @@ function StripeInterface_CheckError($stripeError) {
       $err_return['msg'] = "There was an API issue while contacting the gateway. (Error 400)";
       break;
 
+      case "0": // 501
+      $err_return['issue'] = "all";
+      $err_return['msg'] = "The API key was not included in the API call to Stripe. (Error 501)";
+      break;
+
       default: // 500
       $err_return['issue'] = "all";
-      $err_return['msg'] = "There was a problem while verifying your credit card information. Please re-enter it. (Error 500)";
+      $err_return['msg'] = "There was a problem while verifying your credit card information. Please re-enter it. (Error 500)<br />\n";
+      $err_return['msg'] .= "<blockquote>" . $stripeError['error'] . "</blockquote>";
       break;
 
    }

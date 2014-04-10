@@ -14,15 +14,15 @@
 
 function Forms_ReformatData($string) {
 
-   $string = eregi_replace("@@;@@", ";", $string);
-   $string = eregi_replace("@@drop@@", "drop", $string);
-   $string = eregi_replace("@@replace@@", "replace", $string);
-   $string = eregi_replace("@@create@@", "create", $string);
-   $string = eregi_replace("@@alter@@", "alter", $string);
-   $string = eregi_replace("@@select@@", "select", $string);
-   $string = eregi_replace("@@script@@", "script", $string);
-   $string = eregi_replace("@@embed@@", "embed", $string);
-   $string = stripslashes($string);
+      $string = preg_replace("/@@;@@/i", ";", $string);
+      $string = preg_replace("/@@drop@@/i", "drop", $string);
+      $string = preg_replace("/@@replace@@/i", "replace", $string);
+      $string = preg_replace("/@@create@@/i", "create", $string);
+      $string = preg_replace("/@@alter@@/i", "alter", $string);
+      $string = preg_replace("/@@select@@/i", "select", $string);
+      $string = preg_replace("/@@script@@/i", "script", $string);
+      $string = preg_replace("/@@embed@@/i", "embed", $string);
+      $string = stripslashes($string);
 
    return $string;
 
@@ -31,15 +31,15 @@ function Forms_ReformatData($string) {
 
 function Forms_FormatData($string) {
 
-   $string = eregi_replace(";", "@@;@@", $string);
-   $string = eregi_replace("drop", "@@drop@@", $string);
-   $string = eregi_replace("replace", "@@replace@@", $string);
-   $string = eregi_replace("create", "@@create@@", $string);
-   $string = eregi_replace("script", "@@script@@", $string);
-   $string = eregi_replace("embed", "@@embed@@", $string);
-   $string = eregi_replace("alter", "@@alter@@", $string);
-   $string = eregi_replace("select", "@@select@@", $string);
-   $string = addslashes($string);
+      $string = preg_replace("/;/i", "@@;@@", $string);
+      $string = preg_replace("/drop/i", "@@drop@@", $string);
+      $string = preg_replace("/replace/i", "@@replace@@", $string);
+      $string = preg_replace("/create/i", "@@create@@", $string);
+      $string = preg_replace("/script/i", "@@script@@", $string);
+      $string = preg_replace("/embed/i", "@@embed@@", $string);
+      $string = preg_replace("/alter/i", "@@alter@@", $string);
+      $string = preg_replace("/select/i", "@@select@@", $string);
+      $string = addslashes($string);
 
    return $string;
 

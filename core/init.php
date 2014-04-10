@@ -71,6 +71,6 @@ if (!file_exists(STAKER_DATA) && basename($_SERVER['PHP_SELF']) != "setup.php") 
 
 }
 
-   $StripeTaker_SaveFile_Data['version'] = "1.01b";
+   $StripeTaker_SaveFile_Data['version'] = "1.02.2";
 
 ?>
