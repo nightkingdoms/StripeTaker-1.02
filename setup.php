@@ -1,7 +1,7 @@
 <?php
 
 /*******************************************\
-|            StripeTaker v1.02              |
+|               StripeTaker                 |
 |         [ Open Source Version ]           |
 |     Released under the MIT License.       |
 |   See LICENSE.TXT to view the license.    |
@@ -27,7 +27,7 @@
       $forminfo['store_state'] = $_REQUEST['store_state'];
       $forminfo['store_postal'] = $_REQUEST['store_postal'];
       $forminfo['store_country'] = $_REQUEST['store_country'];
-      $forminfo['password'] = $_REQUEST['password'];
+      $forminfo['password'] = hash("sha512", $_REQUEST['password'], false);
       $forminfo['serial'] = $_REQUEST['serial'];
       $forminfo['currency'] = $_REQUEST['currency'];
       $forminfo['mode'] = $_REQUEST['mode'];

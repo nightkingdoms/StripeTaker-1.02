@@ -1,7 +1,7 @@
 <?php
 
 /*******************************************\
-|            StripeTaker v1.02              |
+|               StripeTaker                 |
 |         [ Open Source Version ]           |
 |     Released under the MIT License.       |
 |   See LICENSE.TXT to view the license.    |
@@ -27,8 +27,7 @@
    ?>
    <footer class="footer" style="border-style: solid; border: 0px; border-top: 1px solid #eeeeee; padding-top: 5px;">
    <a href="http://nightkingdoms.com/StripeTaker/" target="_blank"><img src="img/stripetaker_bug.png" border="0"></a> 
-   <a href="http://nk2.us/fb" target="_blank"><i class="icon-facebook-sign icon-large" style="color: #<?php if ($header_login) { echo "888888"; } else { echo "cccccc"; } ?>; font-size: 1.5em; margin-top: 20px; padding-left: 10px;"></i></a> 
-   <a href="http://twitter.com/nightkingdoms" target="_blank"><i class="icon-twitter-sign icon-large" style="color: #<?php if ($header_login) { echo "888888"; } else { echo "cccccc"; } ?>; font-size: 1.5em; margin-top: 20px; padding-left: 10px;"></i></a>
+   <a href="http://stripe.com/" target="_blank"><img src="img/stripe-footer.png" border="0"></a>
    </footer>
    <?php } else { ?>
 

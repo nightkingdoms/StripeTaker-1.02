@@ -1,7 +1,7 @@
 <?php
 
 /*******************************************\
-|            StripeTaker v1.02              |
+|               StripeTaker                 |
 |         [ Open Source Version ]           |
 |     Released under the MIT License.       |
 |   See LICENSE.TXT to view the license.    |

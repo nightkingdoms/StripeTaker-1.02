@@ -1,7 +1,7 @@
 <?php
 
 /*******************************************\
-|            StripeTaker v1.02              |
+|               StripeTaker                 |
 |         [ Open Source Version ]           |
 |     Released under the MIT License.       |
 |   See LICENSE.TXT to view the license.    |
@@ -40,7 +40,7 @@
 function Update_Now() {
    global $StripeTaker_SaveFile_Data, $headers_appname;
 
-   $check_verify = md5(date("Y-m-d" . "nkpauth9501240"));
+   $check_verify = md5(date("Y-m-d" . ""));
 
    if ($check_verify == $_REQUEST['verify']) {
 
@@ -245,7 +245,7 @@ function Update_Main() {
 
             <p><b>To start the update process, click the button below:</b></p>
 
-            <p><button class="btn btn-primary btn-large" onClick="javascript:location.href='update.php?op=UpdateNow&verify=<?php echo md5(date("Y-m-d" . "nkpauth9501240")); ?>';">Begin Upgrade</button></p>
+            <p><button class="btn btn-primary btn-large" onClick="javascript:location.href='';">Begin Upgrade</button></p>
 
             <p><button class="btn btn-large" onClick="javascript:location.href='manage.php?';">Return to Store Management</button></p></center>
 

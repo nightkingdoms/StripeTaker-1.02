@@ -1,7 +1,7 @@
 <?php
 
 /*******************************************\
-|            StripeTaker v1.02              |
+|               StripeTaker                 |
 |         [ Open Source Version ]           |
 |     Released under the MIT License.       |
 |   See LICENSE.TXT to view the license.    |
@@ -16,7 +16,7 @@
 
    if ($_REQUEST['op'] == "Process") {
 
-      if ($StripeTaker_SaveFile_Data['password'] == $_REQUEST['password']) {
+      if ($StripeTaker_SaveFile_Data['password'] == hash("sha512", $_REQUEST['password'], false))) {
 
          AddSession();
          header("Location:manage.php");
